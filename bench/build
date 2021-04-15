@@ -2,12 +2,14 @@
 
 set -ex
 
+flags=-Wno-discarded-qualifiers
+
 compile-mc() {
     /home/bjorn/rv/toolchain/bin/riscv32-unknown-linux-gnu-gcc -g \
 							       -march=${2} -mabi=ilp32 \
 							       -mcmodel=medlow -c builtins.c -o builtins-${2}.o
     /home/bjorn/rv/toolchain/bin/riscv32-unknown-linux-gnu-gcc -g -march=${2} -mabi=ilp32 \
-							       -DMC_BENCH \
+							        ${flags} -DMC_BENCH \
 							       -static -mcmodel=medlow -${1} -nostdlib -nostartfiles \
 							       -ffreestanding -flto -Wl,--gc-sections -I../mc ../mc/monocypher.c \
 							       ../mc/optional/monocypher-ed25519.c signtest.c -o mc-${1}-${2} \
@@ -19,7 +21,7 @@ compile-tn() {
 							       -march=${2} -mabi=ilp32 \
 							       -mcmodel=medlow -c builtins.c -o builtins-${2}.o
     /home/bjorn/rv/toolchain/bin/riscv32-unknown-linux-gnu-gcc -g -march=${2} -mabi=ilp32 \
-							       -DTN_BENCH \
+							        ${flags} -DTN_BENCH \
 							       -static -mcmodel=medlow -${1} -nostdlib -nostartfiles \
 							       -ffreestanding -flto -Wl,--gc-sections -I../tn ../tn/tweetnacl.c \
 							       signtest.c -o tn-${1}-${2} -lgcc builtins-${2}.o
