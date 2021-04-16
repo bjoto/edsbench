@@ -27,6 +27,21 @@ compile-tn() {
 							       signtest.c -o tn-${1}-${2} -lgcc builtins-${2}.o
 }
 
+compile-c() {
+    /home/bjorn/rv/toolchain/bin/riscv32-unknown-linux-gnu-gcc -g \
+							       -march=${2} -mabi=ilp32 \
+							       -mcmodel=medlow -c builtins.c -o builtins-${2}.o
+    /home/bjorn/rv/toolchain/bin/riscv32-unknown-linux-gnu-gcc -g -march=${2} -mabi=ilp32 \
+							        ${flags} -DC_BENCH \
+							       -static -mcmodel=medlow -${1} -nostdlib -nostartfiles \
+							       -ffreestanding -flto -Wl,--gc-sections -I../c25519 \
+							       ../c25519/c25519.c ../c25519/ed25519.c ../c25519/edsign.c \
+							       ../c25519/f25519.c ../c25519/fprime.c ../c25519/morph25519.c \
+							       ../c25519/sha512.c \
+							       signtest.c -o c-${1}-${2} -lgcc builtins-${2}.o
+}
+
+
 compile-mc Os rv32i
 compile-mc Os rv32im
 compile-mc Os rv32ic
@@ -37,9 +52,15 @@ compile-tn Os rv32im
 compile-tn Os rv32ic
 compile-tn Os rv32imc
 
+compile-c Os rv32i
+compile-c Os rv32im
+compile-c Os rv32ic
+compile-c Os rv32imc
+
 size mc-*
 size tn-*
+size c-*
 
-rm mc-*
-rm tn-*
-rm *.o
+# rm mc-*
+# rm tn-*
+# rm *.o
